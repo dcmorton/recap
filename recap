@@ -39,6 +39,7 @@ PSTREE_FILE="$BASEDIR/pstree.log"
 RESOURCES_FILE="$BASEDIR/resources.log"
 NETSTAT_FILE="$BASEDIR/netstat.log"
 MYSQL_FILE="$BASEDIR/mysql.log"
+COMBINED_FILE="$BASEDIR/combined.log"
 ROTATELOGS="yes"
 SNAPSHOT="no"
 BACKUP="no"
@@ -64,6 +65,7 @@ USEMYSQLPROCESSLIST="no"
 USEDF="no"
 USESLAB="no"
 USEINNODB="no"
+USECOMBINED="no"
 
 # variables not currently documented for end users/not yet intended for use
 # if you change any of these, everything is likely to break in some ugly,
@@ -332,6 +334,53 @@ print_slabinfo() {
 	printf "name\tactive\tnum_obj\tobj_size\thuh\n" >> $RESOURCES_FILE; tail -n+2 /proc/slabinfo | awk 'size=$3*$4 {print $1"\t"$2"\t"$3"\t"$4"\t"size/1048576}' | sort -k5gr >> $RESOURCES_FILE
 }
 
+# create the combined file
+# code pretty much stolen from the email report section
+print_combined() {
+	# echo the report files in the combined file
+        if [ -f $PS_FILE ] && [ $USEPS = "yes" -o $USEPS = "YES" ]
+        then
+         	echo "-----BEGIN COMBINED REPORT----" >> $BASEDIR/combined.log
+		echo " " >> $BASEDIR/combined.log
+	 	echo "-----BEGIN PS REPORT-----" >> $BASEDIR/combined.log
+                cat $PS_FILE >> $BASEDIR/combined.log
+                echo "-----END PS REPORT-----" >> $BASEDIR/combined.log
+                echo " " >> $BASEDIR/combined.log
+        fi
+
+        if [ -f $PSTREE_FILE ] && [ $USEPSTREE = "yes" -o $USEPSTREE = "YES" ]
+        then
+                echo "-----BEGIN PSTREE REPORT-----" >> $BASEDIR/combined.log
+                cat $PSTREE_FILE >> $BASEDIR/combined.log
+                echo "-----END PSTREE REPORT-----" >> $BASEDIR/combined.log
+                echo " " >> $BASEDIR/combined.log
+        fi
+
+        if [ -f $RESOURCES_FILE ] && [ $USERESOURCES = "yes" -o $USERESOURCES = "YES" ]
+        then
+                echo "-----BEGIN RESOURCES REPORT-----" >> $BASEDIR/combined.log
+                cat $RESOURCES_FILE >> $BASEDIR/combined.log
+                echo "-----END RESOURCES REPORT-----" >> $BASEDIR/combined.log
+                echo " " >> $BASEDIR/combined.log
+        fi
+
+        if [ -f $NETSTAT_FILE ] && [ $USENETSTAT = "yes" -o $USENETSTAT = "YES" ]
+        then
+                echo "-----BEGIN NETSTAT REPORT-----" >> $BASEDIR/combined.log
+                cat $NETSTAT_FILE >> $BASEDIR/combined.log
+                echo "-----END RESOURCES REPORT-----" >> $BASEDIR/combined.log
+                echo " " >> $BASEDIR/combined.log
+        fi
+
+         if [ -f $MYSQL_FILE ] && [ $USEMYSQL = "yes" -o $USEMYSQL = "YES" ]
+        then
+                echo "-----BEGIN MYSQL REPORT-----" >> $BASEDIR/combined.log
+                cat $MYSQL_FILE >> $BASEDIR/combined.log
+                echo "-----END RESOURCES REPORT-----" >> $BASEDIR/combined.log
+                echo " " >> $BASEDIR/combined.log
+        fi
+
+
 # send the report via email
 send_mail() {
 	# create a temp directory
@@ -559,6 +608,23 @@ run_mysql_report() {
 	fi
 }
 
+# manage combined report
+run_combined_report() {
+        if [ $ROTATELOGS = "yes" ]
+        then
+                rotate_output_file $COMBINED_FILE
+        fi
+
+        if [ $SNAPSHOT = "yes" ]
+        then
+                COMBINED_FILE="$BASEDIR/combined.log_snapshot_$DATE";
+        fi
+
+        create_output_file $COMBINED_FILE
+        check_output_file $COMBINED_FILE
+        print_combined
+}
+
 ###############################################
 ######### BEGIN EXECUTING SCRIPT HERE #########
 ###############################################
@@ -703,6 +769,19 @@ then
 		# run the mysql report
 		run_mysql_report
 	fi
+fi
+
+# run the ps report
+if [ $USECOMBINED = "yes" -o $USECOMBINED = "YES" ]
+then
+        # check to see if we're just creating a backup
+        if [ $BACKUP = "yes" -o $BACKUP = "YES" ]
+        then
+                backup_file $COMBINED_FILE
+        else
+                # run the ps report
+                run_ps_report
+        fi
 fi
 
 # check to see if report should be emailed
