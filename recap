@@ -187,7 +187,7 @@ fi
 
 # print output of "ps auxww" to the PS_FILE
 print_ps() {
-	ps auxww >> $PS_FILE
+	ps fauxww >> $PS_FILE
 }
 
 # print output of "pstree" to PSTREE_FILE
