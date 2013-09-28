@@ -379,7 +379,7 @@ print_combined() {
                 echo "-----END RESOURCES REPORT-----" >> $BASEDIR/combined.log
                 echo " " >> $BASEDIR/combined.log
         fi
-
+}
 
 # send the report via email
 send_mail() {
