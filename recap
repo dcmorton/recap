@@ -323,7 +323,7 @@ print_top_10_mem() {
 # print the disk utilization to the resources file
 print_df() {
 	echo "Disk Utilization" >> $RESOURCES_FILE
-	df -x nfs >> $RESOURCES_FILE
+	df -h -x nfs >> $RESOURCES_FILE
 }
 
 # print the slabinfo command to the resources file
@@ -370,7 +370,7 @@ send_mail() {
 		echo " " >> $TEMPDIR/report.log
 	fi
 
-	if [ -f $MYSQL_FILE ] && [ $USEMYSQL = "yes" -o $USEMYSQL = "YES" ]
+	 if [ -f $MYSQL_FILE ] && [ $USEMYSQL = "yes" -o $USEMYSQL = "YES" ]
 	then
 		echo "-----BEGIN MYSQL REPORT-----" >> $TEMPDIR/report.log
 		cat $MYSQL_FILE >> $TEMPDIR/report.log
