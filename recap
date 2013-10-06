@@ -185,7 +185,7 @@ then
 fi
 }
 
-# print output of "ps auxww" to the PS_FILE
+# print output of "ps fauxww" to the PS_FILE
 print_ps() {
 	ps fauxww >> $PS_FILE
 }
