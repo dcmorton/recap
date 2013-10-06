@@ -368,7 +368,7 @@ print_combined() {
         then
                 echo "-----BEGIN NETSTAT REPORT-----" >> $BASEDIR/combined.log
                 cat $NETSTAT_FILE >> $BASEDIR/combined.log
-                echo "-----END RESOURCES REPORT-----" >> $BASEDIR/combined.log
+                echo "-----END NETSTAT REPORT-----" >> $BASEDIR/combined.log
                 echo " " >> $BASEDIR/combined.log
         fi
 
@@ -376,7 +376,7 @@ print_combined() {
         then
                 echo "-----BEGIN MYSQL REPORT-----" >> $BASEDIR/combined.log
                 cat $MYSQL_FILE >> $BASEDIR/combined.log
-                echo "-----END RESOURCES REPORT-----" >> $BASEDIR/combined.log
+                echo "-----END NETSTAT REPORT-----" >> $BASEDIR/combined.log
                 echo " " >> $BASEDIR/combined.log
         fi
 }
