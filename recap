@@ -771,7 +771,7 @@ then
 	fi
 fi
 
-# run the ps report
+# run the combined report
 if [ $USECOMBINED = "yes" -o $USECOMBINED = "YES" ]
 then
         # check to see if we're just creating a backup
@@ -779,8 +779,8 @@ then
         then
                 backup_file $COMBINED_FILE
         else
-                # run the ps report
-                run_ps_report
+                # run the combined report
+                run_combined_report
         fi
 fi
 
